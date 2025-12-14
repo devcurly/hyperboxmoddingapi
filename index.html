@@ -1,0 +1,2183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HyperBox Modding API Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #1c2128;
+            --border-color: #30363d;
+            --text-primary: #c9d1d9;
+            --text-secondary: #8b949e;
+            --accent-primary: #f96b52;
+            --accent-hover: #ff8570;
+            --code-bg: #0d1117;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .logo {
+            height: 40px;
+            width: auto;
+        }
+
+        .header-title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .header-title p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .version-badge {
+            background: var(--bg-tertiary);
+            color: var(--accent-primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .sidebar h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .nav-list {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 0.25rem;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .nav-link.active {
+            background: var(--bg-tertiary);
+            color: var(--accent-primary);
+            font-weight: 500;
+        }
+
+        .main-content {
+            min-width: 0;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .section-header p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .api-section {
+            margin-bottom: 3rem;
+        }
+
+        .api-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .api-section h2::before {
+            content: "#";
+            color: var(--accent-primary);
+            font-weight: 400;
+        }
+
+        .function-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+
+        .function-header {
+            padding: 1rem 1.25rem;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .function-signature {
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 0.9375rem;
+            color: var(--accent-primary);
+            font-weight: 500;
+        }
+
+        .function-body {
+            padding: 1.25rem;
+        }
+
+        .function-description {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+
+        .param-list {
+            margin-bottom: 1rem;
+        }
+
+        .param-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .param-item {
+            display: flex;
+            gap: 1rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .param-item:last-child {
+            border-bottom: none;
+        }
+
+        .param-name {
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            color: var(--accent-primary);
+            font-size: 0.875rem;
+            min-width: 120px;
+        }
+
+        .param-type {
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            min-width: 80px;
+        }
+
+        .param-desc {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            flex: 1;
+        }
+
+        .code-example {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 1rem;
+            overflow-x: auto;
+        }
+
+        .code-example-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .code-example pre {
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .info-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-left: 3px solid var(--accent-primary);
+            border-radius: 6px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box-title {
+            font-weight: 600;
+            color: var(--accent-primary);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-box-content {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            line-height: 1.6;
+        }
+
+        .quick-start {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .quick-start h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .quick-start-steps {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .quick-start-steps li {
+            counter-increment: step-counter;
+            padding-left: 2.5rem;
+            position: relative;
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .quick-start-steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .card h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .card p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .inline-code {
+            background: var(--bg-tertiary);
+            color: var(--accent-primary);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+            font-size: 0.875em;
+            border: 1px solid var(--border-color);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th {
+            background: var(--bg-tertiary);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.9375rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border-color);
+            margin-top: 4rem;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                margin-bottom: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .section-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>HyperBox Modding API</h1>
+                <p>Lua Scripting Reference</p>
+            </div>
+            <span class="version-badge">v1.0</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h3>Navigation</h3>
+            <ul class="nav-list">
+                <li class="nav-item"><a class="nav-link active" onclick="showSection('home')">Getting Started</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showSection('vectors')">Vector Operations</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showSection('math')">Math Functions</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showSection('player')">Player API</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showSection('character')">Character API</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showSection('world')">World API</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showSection('ai')">AI API</a></li>
+                <li class="nav-item"><a class="nav-link" onclick="showSection('events')">Event Callbacks</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <!-- Getting Started Section -->
+            <div id="home" class="section active">
+                <div class="section-header">
+                    <h1>Getting Started</h1>
+                    <p>Learn how to create mods for HyperBox using the Lua scripting API.</p>
+                </div>
+
+                <div class="quick-start">
+                    <h3>Installation</h3>
+                    <ol class="quick-start-steps">
+                        <li>Navigate to your game directory: <span class="inline-code">GAME/ALS_EU/Mods/</span></li>
+                        <li>Create a new <span class="inline-code">.lua</span> file directly in the Mods folder (not in a subfolder)</li>
+                        <li>Additional assets (sounds, models) can be placed in subfolders</li>
+                        <li>Start the game to load your mod</li>
+                    </ol>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-box-title">Important</div>
+                    <div class="info-box-content">
+                        Lua script files must be placed directly in the Mods folder. Nested folders are not supported for script files, but can be used for assets like audio and 3D models.
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Basic Script Structure</h2>
+                    
+                    <div class="code-example">
+                        <div class="code-example-title">Example: hello_world.lua</div>
+                        <pre>-- Initialize your mod
+function mod:begin_play()
+    Print("Hello World!", 3)
+    Message("Mod loaded successfully", 1, 3)
+end
+
+-- Handle key press events
+function mod:key_pressed(key)
+    if key == "G" then
+        Print("G key pressed", 2)
+    end
+end
+
+-- Update loop (runs every frame)
+function mod:tick(delta)
+    -- Your update logic here
+    -- delta = time since last frame
+end</pre>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Quick Reference</h2>
+                    <div class="card-grid">
+                        <div class="card" onclick="showSection('vectors')">
+                            <h3>Vector Operations</h3>
+                            <p>Create, manipulate, and transform 3D vectors for position and rotation</p>
+                        </div>
+                        <div class="card" onclick="showSection('math')">
+                            <h3>Math Functions</h3>
+                            <p>Mathematical utilities including interpolation, clamping, and distance calculations</p>
+                        </div>
+                        <div class="card" onclick="showSection('character')">
+                            <h3>Character API</h3>
+                            <p>Control character properties, physics, and animations</p>
+                        </div>
+                        <div class="card" onclick="showSection('world')">
+                            <h3>World API</h3>
+                            <p>Spawn objects, play sounds, and manipulate the game world</p>
+                        </div>
+                        <div class="card" onclick="showSection('ai')">
+                            <h3>AI API</h3>
+                            <p>Control NPC behavior, movement, and combat</p>
+                        </div>
+                        <div class="card" onclick="showSection('events')">
+                            <h3>Event Callbacks</h3>
+                            <p>Respond to game events like key presses and character deaths</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <div class="info-box-title">Note on While Loops</div>
+                    <div class="info-box-content">
+                        Standard while loops don't work the same as in vanilla Lua. Use <span class="inline-code">mod:tick(delta)</span> for continuous execution or <span class="inline-code">Delay()</span> for timed events.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vectors Section -->
+            <div id="vectors" class="section">
+                <div class="section-header">
+                    <h1>Vector Operations</h1>
+                    <p>Vectors represent 3D positions and rotations with x, y, z components. Access individual components with <span class="inline-code">.x</span>, <span class="inline-code">.y</span>, <span class="inline-code">.z</span>.</p>
+                </div>
+
+                <div class="api-section">
+                    <h2>Constructor</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">NewVector(x, y, z)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">
+                                Creates a new vector with optional x, y, z components. Defaults to (0, 0, 0) if no parameters provided.
+                            </div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">x</span>
+                                    <span class="param-type">float</span>
+                                    <span class="param-desc">X component (optional, default: 0)</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">y</span>
+                                    <span class="param-type">float</span>
+                                    <span class="param-desc">Y component (optional, default: 0)</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">z</span>
+                                    <span class="param-type">float</span>
+                                    <span class="param-desc">Z component (optional, default: 0)</span>
+                                </div>
+                            </div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>local origin = NewVector()        -- (0, 0, 0)
+local position = NewVector(5, 5, 5) -- (5, 5, 5)
+local x = position.x               -- Access x component</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Arithmetic Operations</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">AddVector(a, b)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Adds two vectors component-wise.</div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>local result = AddVector(NewVector(1,1,1), NewVector(2,2,2))
+-- result = (3, 3, 3)</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SubtractVector(a, b)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Subtracts vector b from vector a component-wise.</div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>local result = SubtractVector(NewVector(2,2,2), NewVector(1,1,1))
+-- result = (1, 1, 1)</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">MultiplyVector(a, b)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Multiplies two vectors component-wise.</div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>local result = MultiplyVector(NewVector(10,10,10), NewVector(2,1,3))
+-- result = (20, 10, 30)</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">MultiplyVectorF(vector, scalar)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Multiplies a vector by a scalar float value.</div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>local result = MultiplyVectorF(NewVector(1,1,1), 5)
+-- result = (5, 5, 5)</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">DivideVector(a, b)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Divides vector a by vector b component-wise.</div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>local result = DivideVector(NewVector(10,10,10), NewVector(2,1,3))
+-- result = (5, 10, 3.333...)</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">DivideVectorF(vector, scalar)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Divides a vector by a scalar float value.</div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>local result = DivideVectorF(NewVector(10,10,10), 2)
+-- result = (5, 5, 5)</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Direction Vectors</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">ForwardVector(object)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the forward direction vector of the given object.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">object</span>
+                                    <span class="param-type">Object</span>
+                                    <span class="param-desc">The object to get the forward vector from</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">UpVector(object)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the up direction vector of the given object.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">RightVector(object)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the right direction vector of the given object.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Transform Functions</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetLocation(object)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the world location of the given object as a vector.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SetLocation(object, vector)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Sets the world location of the given object.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">object</span>
+                                    <span class="param-type">Object</span>
+                                    <span class="param-desc">The object to move</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">vector</span>
+                                    <span class="param-type">Vector</span>
+                                    <span class="param-desc">The new world location</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetRotation(object)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the world rotation of the given object as a vector.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SetRotation(object, vector)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Sets the world rotation of the given object.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Math Section -->
+            <div id="math" class="section">
+                <div class="section-header">
+                    <h1>Math Functions</h1>
+                    <p>Mathematical utilities for calculations, interpolation, and distance measurements.</p>
+                </div>
+
+                <div class="api-section">
+                    <h2>Utility Functions</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">Clamp(input, min, max)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Clamps a float value between minimum and maximum bounds.</div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>local result = Clamp(75, 0, 50)
+-- result = 50</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">MapRange(input, inRangeA, inRangeB, outRangeA, outRangeB)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Maps a value from one range to another range.</div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>local result = MapRange(50, 0, 100, 0, 500000)
+-- result = 250000 (50% of output range)</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">Distance(vectorA, vectorB)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the Euclidean distance between two vectors.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">Magnitude(vector)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the magnitude (length) of a vector.</div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>local mag = Magnitude(NewVector(1, 1, 1))
+-- mag ≈ 1.732</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Interpolation</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">LerpV(current, target, speed)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Linear interpolation between two vectors. Smoothly transitions from current to target.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">current</span>
+                                    <span class="param-type">Vector</span>
+                                    <span class="param-desc">Starting vector</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">target</span>
+                                    <span class="param-type">Vector</span>
+                                    <span class="param-desc">Target vector</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">speed</span>
+                                    <span class="param-type">float</span>
+                                    <span class="param-desc">Interpolation speed (0-1)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">LerpF(current, target, speed)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Linear interpolation between two float values.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">NearlyEqualV(vector, equalTo, tolerance)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Checks if two vectors are approximately equal within a tolerance.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">NearlyEqualF(float, equalTo, tolerance)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Checks if two floats are approximately equal within a tolerance.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Rotation Utilities</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">LookAtRotation(from, to)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Calculates the rotation needed to look from one position towards another.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">ForwardVectorFromRot(rotation)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Extracts the forward direction vector from a rotation vector.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Player Section -->
+            <div id="player" class="section">
+                <div class="section-header">
+                    <h1>Player API</h1>
+                    <p>Functions for accessing player and camera information.</p>
+                </div>
+
+                <div class="api-section">
+                    <h2>Player Functions</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetPlayer()</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the player character object.</div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>local player = GetPlayer()
+local playerPos = GetLocation(player)</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">CameraLocation()</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the current camera world location as a vector.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">CameraForwardVector()</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the forward direction vector of the camera. Useful for spawning objects in front of the player.</div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>local camPos = CameraLocation()
+local camForward = CameraForwardVector()
+local spawnPos = AddVector(camPos, MultiplyVectorF(camForward, 300))</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Character Section -->
+            <div id="character" class="section">
+                <div class="section-header">
+                    <h1>Character API</h1>
+                    <p>Control and manipulate character properties, physics, and behavior.</p>
+                </div>
+
+                <div class="api-section">
+                    <h2>Character Management</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">CreateCharacter(location, rotation, scale, type)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Spawns a new NPC character at the specified location.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">location</span>
+                                    <span class="param-type">Vector</span>
+                                    <span class="param-desc">World spawn position</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">rotation</span>
+                                    <span class="param-type">Vector</span>
+                                    <span class="param-desc">Initial rotation</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">scale</span>
+                                    <span class="param-type">Vector</span>
+                                    <span class="param-desc">Character scale</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">type</span>
+                                    <span class="param-type">string</span>
+                                    <span class="param-desc">NPC type identifier</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetCharacters()</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns a table of all currently spawned characters in the world.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetMesh(character)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the skeletal mesh component of the character (their body/ragdoll).</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">Kill(character, instant)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Kills the specified character.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">character</span>
+                                    <span class="param-type">Character</span>
+                                    <span class="param-desc">The character to kill</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">instant</span>
+                                    <span class="param-type">bool</span>
+                                    <span class="param-desc">If true, kills instantly without animation</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">Damage(character)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Applies damage to the specified character.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Character Properties</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetProperties(character)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns a table containing all properties of the character.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SetProperty(character, property, value)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Sets a specific property of the character.</div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>SetProperty(GetPlayer(), "Health", 100)
+SetProperty(npc, "MaxHealth", 200)</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SetSkinColor(character, red, green, blue)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Sets the character's skin color using RGB values (0-1 range).</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">ToggleHair(character, visible)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Toggles hair visibility for the character.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetOverlayState(character)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the character's current overlay animation state.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Movement & Stance</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SetStance(character, stance)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Changes the character's stance.</div>
+                            <div class="param-list">
+                                <div class="param-title">Valid Stances</div>
+                                <div class="param-item">
+                                    <span class="param-name">"Standing"</span>
+                                    <span class="param-type"></span>
+                                    <span class="param-desc">Normal standing position</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">"Crouching"</span>
+                                    <span class="param-type"></span>
+                                    <span class="param-desc">Crouched position</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SetGait(character, gait)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Changes the character's movement speed.</div>
+                            <div class="param-list">
+                                <div class="param-title">Valid Gaits</div>
+                                <div class="param-item">
+                                    <span class="param-name">"Walking"</span>
+                                    <span class="param-type"></span>
+                                    <span class="param-desc">Slow walk speed</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">"Running"</span>
+                                    <span class="param-type"></span>
+                                    <span class="param-desc">Normal running speed</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">"Sprinting"</span>
+                                    <span class="param-type"></span>
+                                    <span class="param-desc">Maximum speed</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Physics & Ragdoll</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">ToggleRagdoll(character)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Toggles ragdoll physics on/off for the character.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">TogglePunching(character)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Toggles the fighting/punching mechanic on/off.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">AddForce(mesh, bone, force)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Applies a continuous force to a specific bone on the character mesh.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">AddForceAtLocation(mesh, bone, force, location)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Applies a force at a specific relative location on a bone.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">AddImpulse(mesh, bone, impulse)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Applies an instant impulse to a bone (one-time force).</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">AddImpulseAtLocation(mesh, bone, impulse, location)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Applies an instant impulse at a specific relative location.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetMeshPartVelocity(mesh, bone)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the current velocity of a specific body part.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SetMeshPartVelocity(mesh, bone, velocity)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Directly sets the velocity of a specific body part.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Sockets</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetSocketLocation(mesh, socketName)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the world location of a socket on the character mesh.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetSocketRotation(mesh, socketName)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the world rotation of a socket on the character mesh.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Stumble Settings</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetStumbleSettings(character)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns a table of the character's stumble physics settings.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SetStumbleSettings(character, setting, value)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Modifies a specific stumble setting value.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">StumbleOverride(character, setting, enabled)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Enables or disables override between custom and vanilla stumble settings. Required when using custom stumble settings.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- World Section -->
+            <div id="world" class="section">
+                <div class="section-header">
+                    <h1>World API</h1>
+                    <p>Functions for creating objects, playing sounds, and manipulating the game world.</p>
+                </div>
+
+                <div class="api-section">
+                    <h2>Object Creation</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">CreateShape(shape, location, rotation, size, material)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Creates a primitive shape in the world.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">shape</span>
+                                    <span class="param-type">string</span>
+                                    <span class="param-desc">Shape type (e.g., "Cube", "Sphere", "Cylinder")</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">location</span>
+                                    <span class="param-type">Vector</span>
+                                    <span class="param-desc">World spawn position</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">rotation</span>
+                                    <span class="param-type">Vector</span>
+                                    <span class="param-desc">Initial rotation</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">size</span>
+                                    <span class="param-type">Vector</span>
+                                    <span class="param-desc">Object scale</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">material</span>
+                                    <span class="param-type">Material</span>
+                                    <span class="param-desc">Material created with NewMaterial()</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">NewMaterial(r, g, b, metallic, specular, glow, roughness)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Creates a new material with specified properties.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">r, g, b</span>
+                                    <span class="param-type">float (0-1)</span>
+                                    <span class="param-desc">RGB color values</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">metallic</span>
+                                    <span class="param-type">float (0-1)</span>
+                                    <span class="param-desc">Metallic property</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">specular</span>
+                                    <span class="param-type">float (0-1)</span>
+                                    <span class="param-desc">Specular reflectivity</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">glow</span>
+                                    <span class="param-type">float (0-10000)</span>
+                                    <span class="param-desc">Emissive glow strength</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">roughness</span>
+                                    <span class="param-type">float (0-1)</span>
+                                    <span class="param-desc">Surface roughness</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">CreateMesh(filePath, location, rotation, scale, enableCollision)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Imports and spawns a custom mesh from an FBX file at runtime.</div>
+                            <div class="info-box">
+                                <div class="info-box-content">File path is relative to the Mods folder. Example: <span class="inline-code">"MyAssets/model.fbx"</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">CreateText(location, rotation, scale, material, text)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Creates 2D text in the 3D world.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SetTextColor(textObject, r, g, b)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Sets the color of a text object using RGB values (0-1 range).</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Audio</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">PlaySound(filePath, location, minDist, maxDist, volume, pitch, autoDestroy, is3D)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Imports and plays a sound from a WAV file.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">filePath</span>
+                                    <span class="param-type">string</span>
+                                    <span class="param-desc">Path relative to Mods folder</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">location</span>
+                                    <span class="param-type">Vector</span>
+                                    <span class="param-desc">3D sound origin</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">minDist</span>
+                                    <span class="param-type">float</span>
+                                    <span class="param-desc">Minimum attenuation distance</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">maxDist</span>
+                                    <span class="param-type">float</span>
+                                    <span class="param-desc">Maximum audible distance</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">volume</span>
+                                    <span class="param-type">float (0-1)</span>
+                                    <span class="param-desc">Volume level</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">pitch</span>
+                                    <span class="param-type">float (0-2)</span>
+                                    <span class="param-desc">Pitch modifier</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">autoDestroy</span>
+                                    <span class="param-type">bool</span>
+                                    <span class="param-desc">Destroy after playing</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">is3D</span>
+                                    <span class="param-type">bool</span>
+                                    <span class="param-desc">Enable spatial audio</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Object Manipulation</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SetSize(object, vector)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Sets the scale of an object.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetSize(object)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the current scale of an object as a vector.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SetVisibility(object, visible)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Shows or hides an object/actor.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">ToggleCollision(object, enabled)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Enables or disables collision on an object. Optional boolean parameter.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">TogglePhysics(object, enabled)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Enables or disables physics simulation on an object. Optional boolean parameter.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetVelocity(object)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the current velocity of an object as a vector.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SetVelocity(object, velocity)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Directly sets the velocity of an object.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetMass(object)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the object's mass in kilograms.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SetMass(object, mass)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Sets the object's mass in kilograms.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Actor Relationships</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">AttachActors(object1, object2, bone)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Attaches one object to another. The bone parameter is only required when attaching to a mesh.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">DetachActor(object)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Detaches an actor from its parent.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">Group(actorsTable)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Combines multiple actors into a single grouped actor.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">UnGroup(object)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Separates a grouped actor and returns a table of all individual actors.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Ray & Overlap Tracing</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">LineTrace(show, ignorePlayer, start, end, actorsToIgnore)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Performs a line trace from start to end position, returning hit information.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">show</span>
+                                    <span class="param-type">bool</span>
+                                    <span class="param-desc">Visualize the trace line</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">ignorePlayer</span>
+                                    <span class="param-type">bool</span>
+                                    <span class="param-desc">Ignore player in trace</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">start</span>
+                                    <span class="param-type">Vector</span>
+                                    <span class="param-desc">Starting position</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">end</span>
+                                    <span class="param-type">Vector</span>
+                                    <span class="param-desc">Ending position</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">actorsToIgnore</span>
+                                    <span class="param-type">table</span>
+                                    <span class="param-desc">Array of actors to ignore</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SphereTrace(show, ignorePlayer, start, end, radius, actorsToIgnore)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Performs a sphere trace with specified radius from start to end position.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">CreateOverlapEvent(location, rotation, scale, eventName)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Creates a box trigger volume that fires an event when entered or exited.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">RegisterTouch(object, eventName)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Binds an object's touch event to a custom event handler.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>World State</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetTimeDilation()</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the current time dilation (game speed) as a float between 0 and 2.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SetTimeDilation(dilation)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Sets the time dilation (game speed). Values range from 0 (paused) to 2 (double speed).</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetWorldTimeDelta()</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the delta time (time since last frame) in seconds.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">GetWorldTime()</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the current world time as a float between 0 and 2400 (24-hour format).</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">SetWorldTime(time)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Sets the world time to a value between 0 and 2400.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">RandomPoint(location, radius)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns a random reachable point within a specified radius. Useful for AI navigation and random spawning.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>UI & Messaging</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">Print(message, duration)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Displays a message in the top-left corner of the screen.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">message</span>
+                                    <span class="param-type">string</span>
+                                    <span class="param-desc">Text to display</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">duration</span>
+                                    <span class="param-type">float</span>
+                                    <span class="param-desc">Display time in seconds</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">Message(message, typeSpeed, duration)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Displays a typewriter-style message at the top of the screen.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">message</span>
+                                    <span class="param-type">string</span>
+                                    <span class="param-desc">Text to display</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">typeSpeed</span>
+                                    <span class="param-type">float</span>
+                                    <span class="param-desc">Characters per second</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">duration</span>
+                                    <span class="param-type">float</span>
+                                    <span class="param-desc">Display time in seconds</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">Delay(time, callback)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Executes code after a specified delay.</div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>Delay(3, function()
+    Print("3 seconds have passed", 2)
+end)</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Section -->
+            <div id="ai" class="section">
+                <div class="section-header">
+                    <h1>AI API</h1>
+                    <p>Control NPC behavior, movement, and combat actions.</p>
+                </div>
+
+                <div class="api-section">
+                    <h2>Movement & Navigation</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">AIMoveTo(character, location)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Commands an AI character to move to the specified location using pathfinding.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">AIGetMoveStatus(character)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Returns the current status of the AI's movement task.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">AIStopMovement(character)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Immediately stops the character's movement.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Combat</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">AIFire(character)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Makes the character fire their equipped weapon, or punch if unarmed.</div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">AIToggleAim(character, target, bone)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Toggles aiming at a target character. Optional bone parameter to aim at a specific body part.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">character</span>
+                                    <span class="param-type">Character</span>
+                                    <span class="param-desc">The AI character</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">target</span>
+                                    <span class="param-type">Character</span>
+                                    <span class="param-desc">The target to aim at</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">bone</span>
+                                    <span class="param-type">string</span>
+                                    <span class="param-desc">Specific bone to aim at (optional)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Equipment</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">AIEquip(character, random, gunName)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Equips a weapon to the AI character. Can randomize or specify a specific weapon.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">character</span>
+                                    <span class="param-type">Character</span>
+                                    <span class="param-desc">The AI character</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">random</span>
+                                    <span class="param-type">bool</span>
+                                    <span class="param-desc">Randomize weapon selection (optional)</span>
+                                </div>
+                                <div class="param-item">
+                                    <span class="param-name">gunName</span>
+                                    <span class="param-type">string</span>
+                                    <span class="param-desc">Specific weapon name (optional)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">AIUnEquip(character)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Unequips the character's current weapon.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Alert State</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">AIAlert()</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Alerts all AI in the world. Makes civilians scared or angry, cops hostile, and alerts enemies to the player's presence.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Events Section -->
+            <div id="events" class="section">
+                <div class="section-header">
+                    <h1>Event Callbacks</h1>
+                    <p>Event handlers that respond to game events and user input.</p>
+                </div>
+
+                <div class="api-section">
+                    <h2>Lifecycle Events</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">function mod:begin_play()</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Called once when a level is loaded. Use this to initialize your mod.</div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>function mod:begin_play()
+    Print("Mod initialized!", 3)
+    -- Initialize variables
+    -- Spawn initial objects
+end</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">function mod:tick(delta)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Called every frame. Use for continuous updates and monitoring.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">delta</span>
+                                    <span class="param-type">float</span>
+                                    <span class="param-desc">Time elapsed since last frame in seconds</span>
+                                </div>
+                            </div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>function mod:tick(delta)
+    -- Runs every frame
+    -- Use delta for frame-independent calculations
+    local player = GetPlayer()
+    local pos = GetLocation(player)
+end</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">function mod:CustomLevelLoaded(levelName)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Called when a custom level is loaded. Returns the level name.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">levelName</span>
+                                    <span class="param-type">string</span>
+                                    <span class="param-desc">Name of the custom level</span>
+                                </div>
+                            </div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>function mod:CustomLevelLoaded(levelName)
+    if levelName == "MyCustomMap" then
+        -- Level-specific initialization
+    end
+end</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Input Events</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">function mod:key_pressed(key)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Called when a keyboard key is pressed.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">key</span>
+                                    <span class="param-type">string</span>
+                                    <span class="param-desc">The key that was pressed</span>
+                                </div>
+                            </div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>function mod:key_pressed(key)
+    if key == "F" then
+        Print("F key pressed", 2)
+    elseif key == "G" then
+        local player = GetPlayer()
+        Kill(player, true)
+    end
+end</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">function mod:key_released(key)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Called when a keyboard key is released.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">key</span>
+                                    <span class="param-type">string</span>
+                                    <span class="param-desc">The key that was released</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-section">
+                    <h2>Game Events</h2>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">function mod:npc_died(npc)</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Called when an NPC dies.</div>
+                            <div class="param-list">
+                                <div class="param-title">Parameters</div>
+                                <div class="param-item">
+                                    <span class="param-name">npc</span>
+                                    <span class="param-type">Character</span>
+                                    <span class="param-desc">The NPC that died</span>
+                                </div>
+                            </div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>function mod:npc_died(npc)
+    local pos = GetLocation(npc)
+    Print("NPC died at position: " .. tostring(pos), 2)
+end</pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="function-block">
+                        <div class="function-header">
+                            <div class="function-signature">function mod:player_died()</div>
+                        </div>
+                        <div class="function-body">
+                            <div class="function-description">Called when the player dies.</div>
+                            <div class="code-example">
+                                <div class="code-example-title">Example</div>
+                                <pre>function mod:player_died()
+    Print("Player has died!", 3)
+    -- Handle player death
+end</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="footer">
+        <p>HyperBox Modding API Documentation • Version 1.0 • © 2024</p>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remove active class from all nav links
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Add active class to clicked nav link
+            event.target.classList.add('active');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

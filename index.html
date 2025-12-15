@@ -49,14 +49,10 @@
             gap: 2rem;
         }
 
-        .logo {
-            height: 40px;
-            width: auto;
-        }
-
         .header-title {
             display: flex;
             flex-direction: column;
+            flex: 1;
         }
 
         .header-title h1 {
@@ -71,6 +67,12 @@
             color: var(--text-secondary);
         }
 
+        .header-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
         .version-badge {
             background: var(--bg-tertiary);
             color: var(--accent-primary);
@@ -79,6 +81,23 @@
             font-size: 0.75rem;
             font-weight: 600;
             border: 1px solid var(--border-color);
+        }
+
+        .modding-link {
+            padding: 0.5rem 1rem;
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .modding-link:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
         }
 
         .container {
@@ -405,55 +424,52 @@
             border: 1px solid var(--border-color);
         }
 
-        .table-wrapper {
-            overflow-x: auto;
-            margin: 1.5rem 0;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .video-container {
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .video-container h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-primary);
             border-radius: 8px;
             overflow: hidden;
         }
 
-        th {
-            background: var(--bg-tertiary);
-            padding: 0.75rem 1rem;
-            text-align: left;
-            font-weight: 600;
-            font-size: 0.875rem;
-            color: var(--text-primary);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        td {
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        .search-box {
+        .video-wrapper video {
             width: 100%;
-            padding: 0.75rem 1rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-primary);
-            font-size: 0.9375rem;
-            margin-bottom: 1.5rem;
+            height: auto;
+            display: block;
         }
 
-        .search-box:focus {
-            outline: none;
-            border-color: var(--accent-primary);
+        .download-link {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .download-link:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
         }
 
         .footer {
@@ -497,8 +513,8 @@
                 <p>Lua Scripting Reference</p>
             </div>
             <div class="header-buttons">
-                <a href="https://hyperboxmpapi.netlify.app" class="modding-link" target="_blank">Multiplayer API Docs</a>
-                <span class="version-badge">v2.0</span>
+                <a href="https://hyperboxmpapi.netlify.app" class="modding-link" target="_blank">Modding API Docs</a>
+                <span class="version-badge">v1.0</span>
             </div>
         </div>
     </div>
